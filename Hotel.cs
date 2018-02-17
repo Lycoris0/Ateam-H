@@ -6,9 +6,13 @@ namespace Ateam
 {
     public class Hotel : BaseBattleAISystem
     {
-		readonly static float ATTACK_MIDDLE_LEN           = 8;
-		readonly static float ATTACK_SHORT_LEN            = 2;
-		readonly static float INVINCIBLE_LEN              = 3;
+        readonly static float ATTACK_MIDDLE_LEN = 8;
+        readonly static float ATTACK_SHORT_LEN = 2;
+        readonly static float INVINCIBLE_LEN = 3;
+        public float x;
+        public float y;
+
+
         //---------------------------------------------------
         // InitializeAI
         //---------------------------------------------------
@@ -22,74 +26,175 @@ namespace Ateam
         override public void UpdateAI()
         {
 
-			//‰∫í„ÅÑ„ÅÆ„ÉÅ„Éº„É†„ÅÆ„Éá„Éº„Çø„ÇíÂèñÂæó
-			List<CharacterModel.Data> playerList = GetTeamCharacterDataList(TEAM_TYPE.PLAYER);
-			List<CharacterModel.Data> enemyList = GetTeamCharacterDataList(TEAM_TYPE.ENEMY);
+            //å›Ç¢ÇÃÉ`Å[ÉÄÇÃÉfÅ[É^ÇéÊìæ
+            List<CharacterModel.Data> playerList = GetTeamCharacterDataList(TEAM_TYPE.PLAYER);
+            List<CharacterModel.Data> enemyList = GetTeamCharacterDataList(TEAM_TYPE.ENEMY);
 
-			//Á¥¢ÊïµÊ©ü„Åã„ÇâÈ†Ü„Å´„É≠„ÉÉ„ÇØ„Ç™„É≥
-			//
+            if (playerList[1].Hp != 0)
+            {
+                CharacterModel.Data getItem = playerList[1];
+                float c1 = x - getItem.BlockPos.x;
+                float d1 = y - getItem.BlockPos.y;
+                if (c1 > 0)
+                {
+                    Move(getItem.ActorId, Common.MOVE_TYPE.RIGHT);
 
-			foreach (CharacterModel.Data playerData in playerList) {
-				
-				float minlen = 100;
+                }
+                if (c1 < 0)
+                {
+                    Move(getItem.ActorId, Common.MOVE_TYPE.LEFT);
 
-				foreach (CharacterModel.Data enemyData in enemyList) {
-					
-					if (enemyData.Hp <= 0) {
-						continue;
-					}
+                }
+                if (d1 > 0)
+                {
+                    Move(getItem.ActorId, Common.MOVE_TYPE.UP);
 
-					float len = (enemyData.BlockPos - playerData.BlockPos).magnitude;
-					if (minlen > len)
-						minlen = len;
-				}
-				if (minlen < ATTACK_SHORT_LEN)
-					Action(playerData.ActorId, Define.Battle.ACTION_TYPE.ATTACK_SHORT);
-				if (minlen < INVINCIBLE_LEN)
-					Action(playerData.ActorId, Define.Battle.ACTION_TYPE.INVINCIBLE);
-				if (minlen < ATTACK_MIDDLE_LEN)
-					Action(playerData.ActorId, Define.Battle.ACTION_TYPE.ATTACK_MIDDLE);
-				Action(playerData.ActorId, Define.Battle.ACTION_TYPE.ATTACK_LONG);
-			}
-
-			for (int i = 0; i < playerList.Count; i++) {
-				
-				CharacterModel.Data character = playerList[i];
-				int id = character.ActorId;
-
-				int move = UnityEngine.Random.Range(0, 4);
-				switch (move)
-				{
-				case 0:
-					//‰∏äÁßªÂãï
-					Move(id, Common.MOVE_TYPE.UP);
-					break;
-
-				case 1:
-					//‰∏ãÁßªÂãï
-					Move(id, Common.MOVE_TYPE.DOWN);
-					break;
-
-				case 2:
-					//Â∑¶ÁßªÂãï
-					Move(id, Common.MOVE_TYPE.LEFT);
-					break;
-
-				case 3:
-					//Âè≥ÁßªÂãï
-					Move(id, Common.MOVE_TYPE.RIGHT);
-					break;
-				}
-
-				//Action(id, Define.Battle.ACTION_TYPE.ATTACK_LONG);
-
-
-			}
+                }
+                if (d1 < 0)
+                {
+                    Move(getItem.ActorId, Common.MOVE_TYPE.DOWN);
 
 
 
 
-        }
+
+                }
+            }
+
+            //çıìGã@Ç©ÇÁèáÇ…ÉçÉbÉNÉIÉì
+            //
+
+            foreach (CharacterModel.Data playerData in playerList)
+            {
+
+                float minlen = 100;
+
+                foreach (CharacterModel.Data enemyData in enemyList)
+                {
+
+                    if (enemyData.Hp <= 0)
+                    {
+                        continue;
+                    }
+
+                    float len = (enemyData.BlockPos - playerData.BlockPos).magnitude;
+                    if (minlen > len)
+                        minlen = len;
+                }
+                if (minlen < ATTACK_SHORT_LEN)
+                    Action(playerData.ActorId, Define.Battle.ACTION_TYPE.ATTACK_SHORT);
+                if (minlen < INVINCIBLE_LEN)
+                    Action(playerData.ActorId, Define.Battle.ACTION_TYPE.INVINCIBLE);
+                if (minlen < ATTACK_MIDDLE_LEN)
+                    Action(playerData.ActorId, Define.Battle.ACTION_TYPE.ATTACK_MIDDLE);
+                Action(playerData.ActorId, Define.Battle.ACTION_TYPE.ATTACK_LONG);
+            }
+
+
+            if (enemyList[2].Hp != 0)
+            {
+
+                foreach (CharacterModel.Data playerData in playerList)
+                {
+                    CharacterModel.Data enemyData = enemyList[2];
+
+
+                    float c = enemyData.BlockPos.x - playerData.BlockPos.x;
+                    float d = enemyData.BlockPos.y - playerData.BlockPos.y;
+
+
+                    if (c > 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.RIGHT);
+
+                    }
+                    if (c < 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.LEFT);
+
+                    }
+                    if (d > 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.UP);
+
+                    }
+                    if (d < 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.DOWN);
+
+                    }
+
+                }
+            }
+            if (enemyList[2].Hp == 0)
+            {
+                foreach (CharacterModel.Data playerData in playerList)
+                {
+                    CharacterModel.Data enemyData = enemyList[1];
+
+
+                    float c = enemyData.BlockPos.x - playerData.BlockPos.x;
+                    float d = enemyData.BlockPos.y - playerData.BlockPos.y;
+
+                    if (c > 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.RIGHT);
+                    }
+                    if (c < 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.LEFT);
+                    }
+                    if (d > 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.UP);
+                    }
+                    if (d < 0)
+                    {
+                        Move(playerData.ActorId, Common.MOVE_TYPE.DOWN);
+                    }
+                }
+            }
+                if (enemyList[2].Hp == 0)
+                {
+                    foreach (CharacterModel.Data playerData in playerList)
+                    {
+                        CharacterModel.Data enemyData = enemyList[0];
+
+
+                        float c = enemyData.BlockPos.x - playerData.BlockPos.x;
+                        float d = enemyData.BlockPos.y - playerData.BlockPos.y;
+
+
+                        if (c > 0)
+                        {
+                            Move(playerData.ActorId, Common.MOVE_TYPE.RIGHT);
+
+                        }
+                        if (c < 0)
+                        {
+                            Move(playerData.ActorId, Common.MOVE_TYPE.LEFT);
+
+                        }
+                        if (d > 0)
+                        {
+                            Move(playerData.ActorId, Common.MOVE_TYPE.UP);
+
+                        }
+                        if (d < 0)
+                        {
+                            Move(playerData.ActorId, Common.MOVE_TYPE.DOWN);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+        
+
 
 
         //---------------------------------------------------
@@ -97,6 +202,8 @@ namespace Ateam
         //---------------------------------------------------
         override public void ItemSpawnCallback(ItemSpawnData itemData)
         {
+           x = itemData.BlockPos.x;
+           y = itemData.BlockPos.y;
         }
     }
 }
